@@ -5710,6 +5710,8 @@ GameObject:
   - component: {fileID: 5082574567923476220}
   - component: {fileID: 5352958571988828030}
   - component: {fileID: 5352958571988828031}
+  - component: {fileID: 5352958571988828032}
+  - component: {fileID: 5352958571988828034}
   m_Layer: 0
   m_Name: P1
   m_TagString: Untagged
@@ -5758,6 +5760,30 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _speed: 250
   _variableJoystick: {fileID: 452580629}
+--- !u!114 &5352958571988828032
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5352958571988828029}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8ed153ae50b054c9d96d01e49c78a7a6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &5352958571988828034
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5352958571988828029}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 810856959a9834c5a9e60f1a2305e676, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!137 &5402034494972579450
 SkinnedMeshRenderer:
   m_ObjectHideFlags: 0

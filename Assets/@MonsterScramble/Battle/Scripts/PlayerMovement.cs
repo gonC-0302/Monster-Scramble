@@ -4,7 +4,6 @@ using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
 [RequireComponent(typeof(PlayerAnimation))]
-
 public class PlayerMovement : MonoBehaviour
 {
     [SerializeField] private float _speed;
