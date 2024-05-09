@@ -57,6 +57,10 @@ namespace MonsterScramble
             }
         }
 
+        /// <summary>
+        /// 敵がまだ生きているか確認
+        /// </summary>
+        /// <returns></returns>
         private bool IsExitTarget()
         {
             return _targetHP != null ? true : false;

@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.EventSystems;
 
 namespace MonsterScramble
 {
@@ -22,6 +22,7 @@ namespace MonsterScramble
         static readonly string FieldLayerName = "Field";
         static readonly string EnemyLayerName = "Enemy";
 
+
         private void Awake()
         {
             _rb = GetComponent<Rigidbody>();
@@ -38,6 +39,17 @@ namespace MonsterScramble
 
         private void Update()
         {
+            //#if UNITY_EDITOR
+            //            if (EventSystem.current.IsPointerOverGameObject())
+            //            {
+            //                return;
+            //            }
+            //#else 
+            //    if (EventSystem.current.IsPointerOverGameObject(Input.GetTouch(0).fingerId)) {
+            //        return;
+            //    }
+            //#endif
+            if (_stateManager.CurrentState == State.Summon) return;
             TrySetTargetTran();
             Rotate();
         }
@@ -58,20 +70,27 @@ namespace MonsterScramble
                         _stateManager.SwitchState(State.Move);
                         _targetPos = hit.point;
                     }
+                    if(hit.collider.gameObject.layer == LayerMask.NameToLayer(EnemyLayerName))
+                    {
+                        _stateManager.SwitchState(State.Move);
+                        _targetPos = hit.point;
+                    }
                 }
             }
         }
 
         private void FixedUpdate()
         {
-            if (_stateManager.CurrentState != State.Move) return;
-            var distance = Vector3.Distance(_targetPos, transform.position);
-            if (distance < 1)
+            if (_stateManager.CurrentState == State.Move || _stateManager.CurrentState == State.Summon)
             {
-                _playerAnim.PlayMoveAnimation(0);
-                return;
+                var distance = Vector3.Distance(_targetPos, transform.position);
+                if (distance < 1)
+                {
+                    _playerAnim.PlayMoveAnimation(0);
+                    return;
+                }
+                Move();
             }
-            Move();
         }
 
         private void Move()
@@ -97,10 +116,12 @@ namespace MonsterScramble
 
         private void OnCollisionEnter(Collision collision)
         {
+            if (_stateManager.CurrentState != State.Move) return;
             if (collision.gameObject.TryGetComponent<HitPoint>(out HitPoint hp))
             {
                 _playerAnim.PlayMoveAnimation(0);
-                _playerAttack.SetTarget(collision.gameObject.transform,hp);
+                _targetPos = transform.position;
+                _playerAttack.SetTarget(collision.gameObject.transform, hp);
             }
         }
     }
