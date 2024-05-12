@@ -2,28 +2,33 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace MonsterScramble
+[RequireComponent(typeof(Animator))]
+public class PlayerAnimation : MonoBehaviour
 {
-    [RequireComponent(typeof(Animator))]
-    public class PlayerAnimation : MonoBehaviour
+    private Animator _anim;
+    static readonly int ATTACK_KEY = Animator.StringToHash("Attack");
+    static readonly int MOVE_KEY = Animator.StringToHash("Move");
+
+    void Awake()
     {
-        private Animator _anim;
-        static readonly int BLEND_KEY = Animator.StringToHash("Blend");
-        static readonly int ATTACK_KEY = Animator.StringToHash("Attack");
-
-        void Start()
+        _anim = GetComponent<Animator>();
+    }
+    public void PlayMoveAnimation()
+    {
+        if(!_anim.GetBool(MOVE_KEY))
         {
-            _anim = GetComponent<Animator>();
+            _anim.SetBool(MOVE_KEY, true);
         }
-
-        public void PlayMoveAnimation(float speed)
+    }
+    public void StopMoveAnimation()
+    {
+        if (_anim.GetBool(MOVE_KEY))
         {
-            _anim.SetFloat(BLEND_KEY, speed);
+            _anim.SetBool(MOVE_KEY, false);
         }
-
-        public void PlayAttackAnimation()
-        {
-            _anim.SetTrigger(ATTACK_KEY);
-        }
+    }
+    public void PlayAttackAnimation()
+    {
+        _anim.SetTrigger(ATTACK_KEY);
     }
 }

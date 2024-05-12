@@ -39,16 +39,6 @@ namespace MonsterScramble
 
         private void Update()
         {
-            //#if UNITY_EDITOR
-            //            if (EventSystem.current.IsPointerOverGameObject())
-            //            {
-            //                return;
-            //            }
-            //#else 
-            //    if (EventSystem.current.IsPointerOverGameObject(Input.GetTouch(0).fingerId)) {
-            //        return;
-            //    }
-            //#endif
             if (_stateManager.CurrentState == State.Summon) return;
             TrySetTargetTran();
             Rotate();
@@ -86,7 +76,7 @@ namespace MonsterScramble
                 var distance = Vector3.Distance(_targetPos, transform.position);
                 if (distance < 1)
                 {
-                    _playerAnim.PlayMoveAnimation(0);
+                    //_playerAnim.PlayMoveAnimation(0);
                     return;
                 }
                 Move();
@@ -97,7 +87,7 @@ namespace MonsterScramble
         {
             var direction = (_targetPos - transform.position).normalized;
             _rb.AddForce(direction * _speed * Time.fixedDeltaTime, ForceMode.VelocityChange);
-            _playerAnim.PlayMoveAnimation(direction.magnitude);
+            //_playerAnim.PlayMoveAnimation(direction.magnitude);
         }
 
         /// <summary>
@@ -114,15 +104,15 @@ namespace MonsterScramble
             transform.rotation = rotation;
         }
 
-        private void OnCollisionEnter(Collision collision)
-        {
-            if (_stateManager.CurrentState != State.Move) return;
-            if (collision.gameObject.TryGetComponent<HitPoint>(out HitPoint hp))
-            {
-                _playerAnim.PlayMoveAnimation(0);
-                _targetPos = transform.position;
-                _playerAttack.SetTarget(collision.gameObject.transform, hp);
-            }
-        }
+        //private void OnCollisionEnter(Collision collision)
+        //{
+        //    if (_stateManager.CurrentState != State.Move) return;
+        //    if (collision.gameObject.TryGetComponent<HitPoint>(out HitPoint hp))
+        //    {
+        //        //_playerAnim.PlayMoveAnimation(0);
+        //        _targetPos = transform.position;
+        //        _playerAttack.SetAttackTarget(collision.gameObject.transform, hp);
+        //    }
+        //}
     }
 }

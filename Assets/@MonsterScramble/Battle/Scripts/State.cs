@@ -1,11 +1,10 @@
-namespace MonsterScramble
+public enum State
 {
-    public enum State
-    {
-        Move,
-        Summon,
-        PreparateAttack,
-        Attack,
-        Death
-    }
+    Idle,
+    Move,
+    MoveToEnemy,
+    Summon,
+    PreparateAttack,
+    Attack,
+    Death
 }

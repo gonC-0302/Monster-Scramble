@@ -1,79 +1,64 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Fusion;
 
-namespace MonsterScramble
+[RequireComponent(typeof(PlayerStateManager))]
+public class PlayerAttack : NetworkBehaviour
 {
-    [RequireComponent(typeof(PlayerStateManager))]
-    [RequireComponent(typeof(PlayerAnimation))]
-    public class PlayerAttack : MonoBehaviour
-    {
-        private PlayerAnimation _playerAnim;
-        private PlayerStateManager _stateManager;
-        private float _timer;
-        private HitPoint _targetHP;
-        private Transform _targetTran;
-        [SerializeField] private float _attackInterval;
-        [SerializeField] private int _attackPower;
-        void Start()
-        {
-            _playerAnim = GetComponent<PlayerAnimation>();
-            _stateManager = GetComponent<PlayerStateManager>();
-        }
+    private PlayerStateManager _stateManager;
+    private float _timer;
+    private HitPoint _targetHP;
+    [SerializeField] private float _attackInterval;
+    [SerializeField] private int _attackPower;
 
-        public void SetTarget(Transform targetTran ,HitPoint targetHP)
+    void Awake()
+    {
+        _stateManager = GetComponent<PlayerStateManager>();
+    }
+    void Update()
+    {
+        switch (_stateManager.CurrentState)
         {
-            this._targetTran = targetTran;
-            this._targetHP = targetHP;
+            case State.PreparateAttack:
+                PreparateAttack();
+                break;
+        }
+    }
+    public void SetAttackTarget(HitPoint targetHP)
+    {
+        this._targetHP = targetHP;
+        _attackInterval = 0;
+    }
+    /// <summary>
+    /// 攻撃準備
+    /// </summary>
+    private void PreparateAttack()
+    {
+        _timer += Time.deltaTime;
+        if (_timer > _attackInterval)
+        {
+            _attackInterval = 2f;
+            _timer = 0;
+            if (!IsExitTarget()) _stateManager.SwitchState(State.Idle);
             _stateManager.SwitchState(State.Attack);
         }
-
-        void Update()
-        {
-            switch (_stateManager.CurrentState)
-            {
-                case State.PreparateAttack:
-                    transform.LookAt(_targetTran);
-                    PreparateAttack();
-                    break;
-                case State.Attack:
-                    transform.LookAt(_targetTran);
-                    Attack();
-                    break;
-            }
-        }
-
-        /// <summary>
-        /// 攻撃準備
-        /// </summary>
-        private void PreparateAttack()
-        {
-            _timer += Time.deltaTime;
-            if (_timer > _attackInterval)
-            {
-                _timer = 0;
-                _stateManager.SwitchState(State.Attack);
-                if (!IsExitTarget()) _stateManager.SwitchState(State.Move);
-            }
-        }
-
-        /// <summary>
-        /// 敵がまだ生きているか確認
-        /// </summary>
-        /// <returns></returns>
-        private bool IsExitTarget()
-        {
-            return _targetHP != null ? true : false;
-        }
-
-        /// <summary>
-        /// 攻撃
-        /// </summary>
-        private void Attack()
-        {
-            _targetHP.GetHit(_attackPower);
-            _playerAnim.PlayAttackAnimation();
-            _stateManager.SwitchState(State.PreparateAttack);
-        }
+    }
+    /// <summary>
+    /// 敵がまだ生きているか確認
+    /// </summary>
+    /// <returns></returns>
+    private bool IsExitTarget()
+    {
+        return _targetHP != null ? true : false;
+    }
+    /// <summary>
+    /// 攻撃
+    /// アニメーションに登録
+    /// </summary>
+    public void Attack()
+    {
+        _targetHP.DealDamageRpc(_attackPower);
+        _stateManager.SwitchState(State.PreparateAttack);
     }
 }

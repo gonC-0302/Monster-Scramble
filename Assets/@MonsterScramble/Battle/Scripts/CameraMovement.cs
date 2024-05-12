@@ -9,7 +9,7 @@ namespace MonsterScramble
         [SerializeField] private Transform _playerTran;
         [SerializeField] private Vector3 _offset;
 
-        void Update()
+        void LateUpdate()
         {
             transform.position = _playerTran.position + _offset;
         }

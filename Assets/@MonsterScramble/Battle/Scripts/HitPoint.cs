@@ -1,27 +1,34 @@
 using System.Collections;
 using System.Collections.Generic;
+using Fusion;
 using UnityEngine;
 
-namespace MonsterScramble
+public class HitPoint : NetworkBehaviour
 {
-    public class HitPoint : MonoBehaviour
+    [SerializeField] private int _maxHP;
+
+    [Networked, OnChangedRender(nameof(HealthChanged))]
+    private float NetworkedHealth { get; set; }
+
+    public override void Spawned()
     {
-        private int _hp;
-        [SerializeField] private int _maxHP;
-
-        private void Start()
+        if (Object.HasStateAuthority)
         {
-            _hp = _maxHP;
+            NetworkedHealth = _maxHP;
         }
-
-        public void GetHit(int damage)
+    }
+    void HealthChanged()
+    {
+        Debug.Log($"Health changed to: {NetworkedHealth}");
+    }
+    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+    public void DealDamageRpc(float damage)
+    {
+        NetworkedHealth -= damage;
+        if (NetworkedHealth < 1)
         {
-            _hp -= damage;
-            if (_hp < 1)
-            {
-                _hp = 0;
-                Destroy(gameObject);
-            }
+            NetworkedHealth = 0;
+            Destroy(gameObject);
         }
     }
 }
