@@ -1,118 +1,108 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.EventSystems;
+using Fusion;
 
-namespace MonsterScramble
+public class PlayerMovement : NetworkBehaviour
 {
-    [RequireComponent(typeof(Rigidbody))]
-    [RequireComponent(typeof(PlayerStateManager))]
-    [RequireComponent(typeof(PlayerAnimation))]
-    [RequireComponent(typeof(PlayerAttack))]
-    public class PlayerMovement : MonoBehaviour
+    [SerializeField]
+    private PlayerCameraMovement _camera;
+    private NetworkCharacterController characterController;
+    private Vector3 _targetPos;
+    private Vector3 _direction;
+    private float _distance;
+    private PlayerStateManager _stateManager;
+    private PlayerAttack _playerAttack;
+    private int _playerID;
+    private static readonly string FieldLayerName = "Field";
+
+    private void Awake()
     {
-        [SerializeField] private float _speed;
-        [SerializeField] private VariableJoystick _variableJoystick;
-        private PlayerAnimation _playerAnim;
-        private PlayerAttack _playerAttack;
-        private PlayerStateManager _stateManager;
-        private Rigidbody _rb;
-        private Vector3 _prevPosition;
-        private Vector3 _targetPos;
-        static readonly string FieldLayerName = "Field";
-        static readonly string EnemyLayerName = "Enemy";
+        characterController = GetComponent<NetworkCharacterController>();
+        _stateManager = GetComponent<PlayerStateManager>();
+        _playerAttack = GetComponent<PlayerAttack>();
+    }
 
-
-        private void Awake()
+    public override void Spawned()
+    {
+        // 自分自身のアバターにカメラを追従させる
+        if (Object.HasStateAuthority)
         {
-            _rb = GetComponent<Rigidbody>();
-            _playerAnim = GetComponent<PlayerAnimation>();
-            _playerAttack = GetComponent<PlayerAttack>();
-            _stateManager = GetComponent<PlayerStateManager>();
-        }
-
-        private void Start()
-        {
+            _camera.SetCameraTarget();
             _targetPos = transform.position;
-            _prevPosition = transform.position;
         }
+    }
 
-        private void Update()
+    public void SetPlayerID(int playerID)
+    {
+        _playerID = playerID;
+    }
+    public override void FixedUpdateNetwork()
+    {
+        if (Object.HasStateAuthority)
         {
-            if (_stateManager.CurrentState == State.Summon) return;
-            TrySetTargetTran();
-            Rotate();
-        }
+            _distance = Vector3.Distance(_targetPos, transform.position);
 
-        /// <summary>
-        /// 敵をタップすると敵の場所まで進む
-        /// </summary>
-        public void TrySetTargetTran()
-        {
-            if (Input.GetMouseButton(0))
+            switch (_stateManager.CurrentState)
             {
-                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-                RaycastHit hit;
-                if (Physics.Raycast(ray, out hit))
+                case PlayerState.Idle:
+                    TrySetTargetTran();
+                    break;
+                case PlayerState.Move:
+                    TrySetTargetTran();
+                    if (_distance < 1)
+                    {
+                        _stateManager.SwitchState(PlayerState.Idle);
+                        return;
+                    }
+                    _direction = (_targetPos - transform.position).normalized;
+                    characterController.Move(_direction);
+                    break;
+                case PlayerState.MoveToEnemy:
+                    TrySetTargetTran();
+                    if (_distance < 1)
+                    {
+                        _stateManager.SwitchState(PlayerState.PreparateAttack);
+                        return;
+                    }
+                    _direction = (_targetPos - transform.position).normalized;
+                    characterController.Move(_direction);
+                    break;
+                case PlayerState.PreparateAttack:
+                    TrySetTargetTran();
+                    transform.LookAt(_targetPos);
+                    break;
+                case PlayerState.Attack:
+                    _targetPos = transform.position;
+                    break;
+            }
+        }
+    }
+    /// <summary>
+    /// 敵をタップすると敵の場所まで進む
+    /// </summary>
+    public void TrySetTargetTran()
+    {
+        if (Input.GetMouseButton(0))
+        {
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            RaycastHit hit;
+            if (Physics.Raycast(ray, out hit))
+            {
+                if (hit.collider.gameObject.TryGetComponent(out HitPoint hp))
                 {
-                    if (hit.collider.gameObject.layer == LayerMask.NameToLayer(FieldLayerName))
-                    {
-                        _stateManager.SwitchState(State.Move);
-                        _targetPos = hit.point;
-                    }
-                    if(hit.collider.gameObject.layer == LayerMask.NameToLayer(EnemyLayerName))
-                    {
-                        _stateManager.SwitchState(State.Move);
-                        _targetPos = hit.point;
-                    }
+                    if (_playerID == hp.PlayerID) return;
+
+                    _playerAttack.SetAttackTarget(hp);
+                    _stateManager.SwitchState(PlayerState.MoveToEnemy);
+                    _targetPos = new Vector3(hit.point.x, transform.position.y, hit.point.z);
+                }
+                if (hit.collider.gameObject.layer == LayerMask.NameToLayer(FieldLayerName))
+                {
+                    _stateManager.SwitchState(PlayerState.Move);
+                    _targetPos = new Vector3(hit.point.x, transform.position.y, hit.point.z);
                 }
             }
         }
-
-        private void FixedUpdate()
-        {
-            if (_stateManager.CurrentState == State.Move || _stateManager.CurrentState == State.Summon)
-            {
-                var distance = Vector3.Distance(_targetPos, transform.position);
-                if (distance < 1)
-                {
-                    //_playerAnim.PlayMoveAnimation(0);
-                    return;
-                }
-                Move();
-            }
-        }
-
-        private void Move()
-        {
-            var direction = (_targetPos - transform.position).normalized;
-            _rb.AddForce(direction * _speed * Time.fixedDeltaTime, ForceMode.VelocityChange);
-            //_playerAnim.PlayMoveAnimation(direction.magnitude);
-        }
-
-        /// <summary>
-        /// 移動方向に滑らかに回転させる
-        /// </summary>
-        private void Rotate()
-        {
-            var position = transform.position;
-            var delta = position - _prevPosition;
-            _prevPosition = position;
-            if (delta == Vector3.zero)
-                return;
-            var rotation = Quaternion.LookRotation(delta, Vector3.up);
-            transform.rotation = rotation;
-        }
-
-        //private void OnCollisionEnter(Collision collision)
-        //{
-        //    if (_stateManager.CurrentState != State.Move) return;
-        //    if (collision.gameObject.TryGetComponent<HitPoint>(out HitPoint hp))
-        //    {
-        //        //_playerAnim.PlayMoveAnimation(0);
-        //        _targetPos = transform.position;
-        //        _playerAttack.SetAttackTarget(collision.gameObject.transform, hp);
-        //    }
-        //}
     }
 }

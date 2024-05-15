@@ -3,30 +3,41 @@ using System.Collections.Generic;
 using Fusion;
 using UnityEngine;
 
+public enum PlayerState
+{
+    Idle,
+    Move,
+    MoveToEnemy,
+    Summon,
+    PreparateAttack,
+    Attack,
+    Death
+}
+
 public class PlayerStateManager : MonoBehaviour
 {
-    public State CurrentState => _currentState;
-    private State _currentState;
+    public PlayerState CurrentState => _currentState;
+    private PlayerState _currentState;
     private PlayerAnimation _playerAnim;
 
     private void Awake()
     {
         _playerAnim = GetComponent<PlayerAnimation>();
     }
-    public void SwitchState(State nextState)
+    public void SwitchState(PlayerState nextState)
     {
         _currentState = nextState;
         switch(nextState)
         {
-            case State.Idle:
-            case State.PreparateAttack:
+            case PlayerState.Idle:
+            case PlayerState.PreparateAttack:
                 _playerAnim.StopMoveAnimation();
                 break;
-            case State.Move:
-            case State.MoveToEnemy:
+            case PlayerState.Move:
+            case PlayerState.MoveToEnemy:
                 _playerAnim.PlayMoveAnimation();
                 break;
-            case State.Attack:
+            case PlayerState.Attack:
                 _playerAnim.PlayAttackAnimation();
                 break;
         }

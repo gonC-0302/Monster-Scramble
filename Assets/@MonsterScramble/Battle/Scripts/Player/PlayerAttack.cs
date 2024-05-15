@@ -6,11 +6,13 @@ using Fusion;
 [RequireComponent(typeof(PlayerStateManager))]
 public class PlayerAttack : NetworkBehaviour
 {
+    [SerializeField]
+    private float _attackInterval;
+    [SerializeField]
+    private int _attackPower;
     private PlayerStateManager _stateManager;
     private float _timer;
     private HitPoint _targetHP;
-    [SerializeField] private float _attackInterval;
-    [SerializeField] private int _attackPower;
 
     void Awake()
     {
@@ -20,7 +22,7 @@ public class PlayerAttack : NetworkBehaviour
     {
         switch (_stateManager.CurrentState)
         {
-            case State.PreparateAttack:
+            case PlayerState.PreparateAttack:
                 PreparateAttack();
                 break;
         }
@@ -40,8 +42,8 @@ public class PlayerAttack : NetworkBehaviour
         {
             _attackInterval = 2f;
             _timer = 0;
-            if (!IsExitTarget()) _stateManager.SwitchState(State.Idle);
-            _stateManager.SwitchState(State.Attack);
+            if (!IsExitTarget()) _stateManager.SwitchState(PlayerState.Idle);
+            _stateManager.SwitchState(PlayerState.Attack);
         }
     }
     /// <summary>
@@ -59,6 +61,6 @@ public class PlayerAttack : NetworkBehaviour
     public void Attack()
     {
         _targetHP.DealDamageRpc(_attackPower);
-        _stateManager.SwitchState(State.PreparateAttack);
+        _stateManager.SwitchState(PlayerState.PreparateAttack);
     }
 }

@@ -5,10 +5,12 @@ using UnityEngine;
 
 public class HitPoint : NetworkBehaviour
 {
-    [SerializeField] private int _maxHP;
-
+    public int PlayerID => _playerID;
+    [SerializeField]
+    private int _maxHP;
     [Networked, OnChangedRender(nameof(HealthChanged))]
     private float NetworkedHealth { get; set; }
+    private int _playerID;
 
     public override void Spawned()
     {
@@ -16,6 +18,10 @@ public class HitPoint : NetworkBehaviour
         {
             NetworkedHealth = _maxHP;
         }
+    }
+    public void SetPlayerID(int playerID)
+    {
+        _playerID = playerID;
     }
     void HealthChanged()
     {

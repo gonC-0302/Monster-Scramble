@@ -15,7 +15,7 @@ namespace MonsterScramble
         public void OnPointerDown(PointerEventData eventData)
         {
             _prevPos = transform.position;
-            _stateManager.SwitchState(State.Summon);
+            _stateManager.SwitchState(PlayerState.Summon);
         }
 
         public void OnBeginDrag(PointerEventData eventData)
@@ -42,7 +42,7 @@ namespace MonsterScramble
                     _summoner.SummonMonster(0, hit.point);
                 }
             }
-            _stateManager.SwitchState(State.Move);
+            _stateManager.SwitchState(PlayerState.Move);
             // ドラッグ前の位置に戻す
             transform.position = _prevPos;
         }
