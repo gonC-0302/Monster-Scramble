@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Fusion;
 
-public class PlayerMovement : NetworkBehaviour
+public class PlayerMovement : BattleCharacterBase
 {
     [SerializeField]
     private PlayerCameraMovement _camera;
@@ -11,16 +11,17 @@ public class PlayerMovement : NetworkBehaviour
     private Vector3 _targetPos;
     private Vector3 _direction;
     private float _distance;
-    private PlayerStateManager _stateManager;
-    private PlayerAttack _playerAttack;
-    private int _playerID;
+    private BattleStateManager _stateManager;
+    private AttackManager _playerAttack;
+    //private int _playerID;
+    private float _attackTargetOffset;
     private static readonly string FieldLayerName = "Field";
 
     private void Awake()
     {
         characterController = GetComponent<NetworkCharacterController>();
-        _stateManager = GetComponent<PlayerStateManager>();
-        _playerAttack = GetComponent<PlayerAttack>();
+        _stateManager = GetComponent<BattleStateManager>();
+        _playerAttack = GetComponent<AttackManager>();
     }
 
     public override void Spawned()
@@ -33,10 +34,10 @@ public class PlayerMovement : NetworkBehaviour
         }
     }
 
-    public void SetPlayerID(int playerID)
-    {
-        _playerID = playerID;
-    }
+    //public void SetPlayerID(int playerID)
+    //{
+    //    _playerID = playerID;
+    //}
     public override void FixedUpdateNetwork()
     {
         if (Object.HasStateAuthority)
@@ -45,34 +46,34 @@ public class PlayerMovement : NetworkBehaviour
 
             switch (_stateManager.CurrentState)
             {
-                case PlayerState.Idle:
+                case BattleState.Idle:
                     TrySetTargetTran();
                     break;
-                case PlayerState.Move:
+                case BattleState.Move:
                     TrySetTargetTran();
                     if (_distance < 1)
                     {
-                        _stateManager.SwitchState(PlayerState.Idle);
+                        _stateManager.SwitchState(BattleState.Idle);
                         return;
                     }
                     _direction = (_targetPos - transform.position).normalized;
                     characterController.Move(_direction);
                     break;
-                case PlayerState.MoveToEnemy:
+                case BattleState.MoveToEnemy:
                     TrySetTargetTran();
-                    if (_distance < 1)
+                    if (_distance < _attackTargetOffset)
                     {
-                        _stateManager.SwitchState(PlayerState.PreparateAttack);
+                        _stateManager.SwitchState(BattleState.PreparateAttack);
                         return;
                     }
                     _direction = (_targetPos - transform.position).normalized;
                     characterController.Move(_direction);
                     break;
-                case PlayerState.PreparateAttack:
+                case BattleState.PreparateAttack:
                     TrySetTargetTran();
                     transform.LookAt(_targetPos);
                     break;
-                case PlayerState.Attack:
+                case BattleState.Attack:
                     _targetPos = transform.position;
                     break;
             }
@@ -89,17 +90,26 @@ public class PlayerMovement : NetworkBehaviour
             RaycastHit hit;
             if (Physics.Raycast(ray, out hit))
             {
-                if (hit.collider.gameObject.TryGetComponent(out HitPoint hp))
+                //if (hit.collider.gameObject.TryGetComponent(out HitPoint hp))
+                //{
+                //    if (_playerID == hp.PlayerID) return;
+                //    Debug.Log(hit.collider.contactOffset);
+                //    _playerAttack.SetAttackTarget(hp);
+                //    _stateManager.SwitchState(BattleState.MoveToEnemy);
+                //    _targetPos = new Vector3(hit.point.x, transform.position.y, hit.point.z);
+                //}
+                if (hit.collider.gameObject.TryGetComponent(out BattleCharacterBase character))
                 {
-                    if (_playerID == hp.PlayerID) return;
-
-                    _playerAttack.SetAttackTarget(hp);
-                    _stateManager.SwitchState(PlayerState.MoveToEnemy);
+                    if (_playerID == character.PlayerID) return;
+                    _playerAttack.SetAttackTarget(character);
+                    _attackTargetOffset = character.GetAttackOffset();
+                    Debug.Log(_attackTargetOffset);
+                    _stateManager.SwitchState(BattleState.MoveToEnemy);
                     _targetPos = new Vector3(hit.point.x, transform.position.y, hit.point.z);
                 }
                 if (hit.collider.gameObject.layer == LayerMask.NameToLayer(FieldLayerName))
                 {
-                    _stateManager.SwitchState(PlayerState.Move);
+                    _stateManager.SwitchState(BattleState.Move);
                     _targetPos = new Vector3(hit.point.x, transform.position.y, hit.point.z);
                 }
             }

@@ -3,26 +3,26 @@ using System.Collections.Generic;
 using UnityEngine;
 using Fusion;
 
-[RequireComponent(typeof(PlayerStateManager))]
-public class PlayerAttack : NetworkBehaviour
+[RequireComponent(typeof(BattleStateManager))]
+public class AttackManager : NetworkBehaviour
 {
     [SerializeField]
     private float _attackInterval;
     [SerializeField]
     private int _attackPower;
-    private PlayerStateManager _stateManager;
+    private BattleStateManager _stateManager;
     private float _timer;
     private HitPoint _targetHP;
-
+    private BattleCharacterBase _targetChara;
     void Awake()
     {
-        _stateManager = GetComponent<PlayerStateManager>();
+        _stateManager = GetComponent<BattleStateManager>();
     }
     void Update()
     {
         switch (_stateManager.CurrentState)
         {
-            case PlayerState.PreparateAttack:
+            case BattleState.PreparateAttack:
                 PreparateAttack();
                 break;
         }
@@ -30,6 +30,12 @@ public class PlayerAttack : NetworkBehaviour
     public void SetAttackTarget(HitPoint targetHP)
     {
         this._targetHP = targetHP;
+        _attackInterval = 0;
+    }
+
+    public void SetAttackTarget(BattleCharacterBase targetCharacter)
+    {
+        this._targetChara = targetCharacter;
         _attackInterval = 0;
     }
     /// <summary>
@@ -42,8 +48,8 @@ public class PlayerAttack : NetworkBehaviour
         {
             _attackInterval = 2f;
             _timer = 0;
-            if (!IsExitTarget()) _stateManager.SwitchState(PlayerState.Idle);
-            _stateManager.SwitchState(PlayerState.Attack);
+            if (!IsExitTarget()) _stateManager.SwitchState(BattleState.Idle);
+            _stateManager.SwitchState(BattleState.Attack);
         }
     }
     /// <summary>
@@ -52,7 +58,8 @@ public class PlayerAttack : NetworkBehaviour
     /// <returns></returns>
     private bool IsExitTarget()
     {
-        return _targetHP != null ? true : false;
+        //return _targetHP != null ? true : false;
+        return _targetChara != null ? true : false;
     }
     /// <summary>
     /// 攻撃
@@ -60,7 +67,8 @@ public class PlayerAttack : NetworkBehaviour
     /// </summary>
     public void Attack()
     {
-        _targetHP.DealDamageRpc(_attackPower);
-        _stateManager.SwitchState(PlayerState.PreparateAttack);
+        _targetChara.GetHit(_attackPower);
+        //_targetHP.DealDamageRpc(_attackPower);
+        _stateManager.SwitchState(BattleState.PreparateAttack);
     }
 }

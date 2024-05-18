@@ -6,47 +6,53 @@ public class GameLauncher : MonoBehaviour
     [SerializeField]
     private NetworkRunner networkRunnerPrefab;
     [SerializeField]
-    private NetworkPrefabRef playerAvatarPrefab,_playerBasePrefab;
+    private NetworkPrefabRef _playerBasePrefab;
     [SerializeField]
-    private Transform _p1AvatarTran, _p2AvatarTran,_p1BaseTran,_p2BaseTran;
-    private NetworkRunner networkRunner;
+    private Transform _p1BaseTran,_p2BaseTran;
+    [SerializeField]
+    private MonsterSummoner _summonner;
+    [SerializeField]
+    private PlayerSpawner _playerSpawner;
+    [SerializeField]
+    private FieldMonsterSpawner _fieldMonsterSpawner;
+    private NetworkRunner _networkRunner;
 
     private async void Start()
     {
-        networkRunner = Instantiate(networkRunnerPrefab);
-        var result = await networkRunner.StartGame(new StartGameArgs
+        _networkRunner = Instantiate(networkRunnerPrefab);
+        var result = await _networkRunner.StartGame(new StartGameArgs
         {
             GameMode = GameMode.Shared,
-            SceneManager = networkRunner.GetComponent<NetworkSceneManagerDefault>()
+            SceneManager = _networkRunner.GetComponent<NetworkSceneManagerDefault>()
         });
 
-        if (result.Ok) InitBattle(networkRunner.LocalPlayer.PlayerId);
+        if (result.Ok)
+        {
+            InitBattle(_networkRunner.LocalPlayer.PlayerId);
+            _summonner.Init(_networkRunner.LocalPlayer.PlayerId,_networkRunner);
+            if(_networkRunner.LocalPlayer.PlayerId == 1) _fieldMonsterSpawner.SpawnFieldMonster( _networkRunner);
+        }
         else Debug.Log("失敗！");
     }
 
     private void InitBattle(int playerID)
     {
-        Vector3 avatarSpawnPos = Vector3.zero;
-        var avatarRot = Quaternion.identity;
+        _playerSpawner.SpawnPlayer(playerID,_networkRunner);
+        SpawnCrystal(playerID);
+    }
+    
+    private void SpawnCrystal(int playerID)
+    {
         var towerSpawnPos = Vector3.zero;
-
         if (playerID == 1)
         {
-            avatarSpawnPos = _p1AvatarTran.position;
-            avatarRot = _p1AvatarTran.rotation;
             towerSpawnPos = _p1BaseTran.position;
         }
         else if (playerID == 2)
         {
-            avatarSpawnPos = _p2AvatarTran.position;
-            avatarRot = _p2AvatarTran.rotation;
             towerSpawnPos = _p2BaseTran.position;
         }
-
-        var avatar = networkRunner.Spawn(playerAvatarPrefab, avatarSpawnPos, avatarRot, networkRunner.LocalPlayer);
-        avatar.GetComponent<PlayerMovement>().SetPlayerID(playerID);
-        avatar.GetComponent<HitPoint>().SetPlayerID(playerID);
-        var tower = networkRunner.Spawn(_playerBasePrefab, towerSpawnPos, Quaternion.identity, networkRunner.LocalPlayer);
-        tower.GetComponent<HitPoint>().SetPlayerID(playerID);
+        var crystal = _networkRunner.Spawn(_playerBasePrefab, towerSpawnPos, Quaternion.identity, _networkRunner.LocalPlayer);
+        crystal.GetComponent<Crystal>().SetPlayerID(playerID);
     }
 }
