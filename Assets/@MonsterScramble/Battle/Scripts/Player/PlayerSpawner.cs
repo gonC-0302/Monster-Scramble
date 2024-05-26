@@ -11,26 +11,36 @@ public class PlayerSpawner : MonoBehaviour
     private Transform _p1AvatarTran, _p2AvatarTran;
     [SerializeField]
     private SummonCard _summonCard;
+    [SerializeField]
+    private SummonCardsList _summonCardsList;
     private NetworkRunner _networkRunner;
+    private const int _characterID = 0;
 
     public void SpawnPlayer(int playerID, NetworkRunner runner)
     {
         this._networkRunner = runner;
-        Vector3 avatarSpawnPos = Vector3.zero;
-        var avatarRot = Quaternion.identity;
+        Vector3 playerSpawnPos = Vector3.zero;
+        var playerRot = Quaternion.identity;
         if (playerID == 1)
         {
-            avatarSpawnPos = _p1AvatarTran.position;
-            avatarRot = _p1AvatarTran.rotation;
+            playerSpawnPos = _p1AvatarTran.position;
+            playerRot = _p1AvatarTran.rotation;
         }
         else if (playerID == 2)
         {
-            avatarSpawnPos = _p2AvatarTran.position;
-            avatarRot = _p2AvatarTran.rotation;
+            playerSpawnPos = _p2AvatarTran.position;
+            playerRot = _p2AvatarTran.rotation;
         }
-        var avatar = _networkRunner.Spawn(playerAvatarPrefab, avatarSpawnPos, avatarRot, _networkRunner.LocalPlayer);
-        avatar.GetComponent<BattleCharacterBase>().SetPlayerID(playerID);
-        var stateManager = avatar.GetComponent<BattleStateManager>();
-        _summonCard.Init(stateManager);
+        var player = _networkRunner.Spawn(playerAvatarPrefab, playerSpawnPos, playerRot, _networkRunner.LocalPlayer);
+        InitPlayer(player.gameObject,playerID);
+        //var stateManager = player.GetComponent<BattleStateManager>();
+        //_summonCard.Init(stateManager);
+    }
+
+    private void InitPlayer(GameObject player,int playerID)
+    {
+        player.GetComponent<PlayerHP>().Init(playerID);
+        player.GetComponent<PlayerMovement>().SetPlayerID(playerID);
+        player.GetComponent<AttackManager>().Init(_summonCardsList,playerID);
     }
 }

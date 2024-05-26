@@ -12,8 +12,16 @@ public class AttackManager : NetworkBehaviour
     private int _attackPower;
     private BattleStateManager _stateManager;
     private float _timer;
-    private HitPoint _targetHP;
-    private BattleCharacterBase _targetChara;
+    private IDamagable _target;
+    private SummonCardsList _summonCardsList;
+    private Collider[] _targetCol = new Collider[3];
+    private int _teamID;
+
+    public void Init(SummonCardsList list,int teamID)
+    {
+        _summonCardsList = list;
+        _teamID = teamID;
+    }
     void Awake()
     {
         _stateManager = GetComponent<BattleStateManager>();
@@ -27,17 +35,6 @@ public class AttackManager : NetworkBehaviour
                 break;
         }
     }
-    public void SetAttackTarget(HitPoint targetHP)
-    {
-        this._targetHP = targetHP;
-        _attackInterval = 0;
-    }
-
-    public void SetAttackTarget(BattleCharacterBase targetCharacter)
-    {
-        this._targetChara = targetCharacter;
-        _attackInterval = 0;
-    }
     /// <summary>
     /// 攻撃準備
     /// </summary>
@@ -48,27 +45,51 @@ public class AttackManager : NetworkBehaviour
         {
             _attackInterval = 2f;
             _timer = 0;
-            if (!IsExitTarget()) _stateManager.SwitchState(BattleState.Idle);
-            _stateManager.SwitchState(BattleState.Attack);
+            if (IsExistTarget())
+            {
+                _stateManager.SwitchState(BattleState.Attack);
+            }
         }
     }
-    /// <summary>
-    /// 敵がまだ生きているか確認
-    /// </summary>
-    /// <returns></returns>
-    private bool IsExitTarget()
+    private void SetTarget(IDamagable target)
     {
-        //return _targetHP != null ? true : false;
-        return _targetChara != null ? true : false;
+        this._target = target;
     }
+    private bool IsExistTarget()
+    {
+        int layerMask = LayerMask.GetMask(new string[] { "Character", "Crystal" });
+        var num = Physics.OverlapSphereNonAlloc(gameObject.transform.position + transform.forward * 1.5f, 3f, _targetCol, layerMask);
+        if (num >= 1)
+        {
+            for (int i = 0; i < _targetCol.Length; i++)
+            {
+                if (_targetCol[i] == null) continue;
+                if (_targetCol[i].gameObject.TryGetComponent<IDamagable>(out IDamagable target))
+                {
+                    if (target.TeamID != _teamID)
+                    {
+                        SetTarget(target);
+                        return true;
+                    }
+                }
+            }
+        }
+        _stateManager.SwitchState(BattleState.Idle);
+        return false;
+    }
+
     /// <summary>
     /// 攻撃
     /// アニメーションに登録
     /// </summary>
     public void Attack()
     {
-        _targetChara.GetHit(_attackPower);
-        //_targetHP.DealDamageRpc(_attackPower);
+        if (_target == null) return;
+        _target.DealDamageRpc(_attackPower, this);
         _stateManager.SwitchState(BattleState.PreparateAttack);
+    }
+    public void GetSummonCard(int monsterID)
+    {
+        _summonCardsList.AddCardsList(monsterID);
     }
 }

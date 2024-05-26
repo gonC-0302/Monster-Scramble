@@ -7,8 +7,8 @@ public enum BattleState
 {
     Idle,
     Move,
-    MoveToEnemy,
-    Summon,
+    MoveToTarget,
+    //Summon,
     PreparateAttack,
     Attack,
     Death
@@ -31,11 +31,11 @@ public class BattleStateManager : MonoBehaviour
         {
             case BattleState.Idle:
             case BattleState.PreparateAttack:
-            case BattleState.Summon:
+            //case BattleState.Summon:
                 _animManager.StopMoveAnimation();
                 break;
             case BattleState.Move:
-            case BattleState.MoveToEnemy:
+            case BattleState.MoveToTarget:
                 _animManager.PlayMoveAnimation();
                 break;
             case BattleState.Attack:

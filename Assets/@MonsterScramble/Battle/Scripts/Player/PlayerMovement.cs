@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Fusion;
 
-public class PlayerMovement : BattleCharacterBase
+public class PlayerMovement : NetworkBehaviour
 {
     [SerializeField]
     private PlayerCameraMovement _camera;
@@ -13,8 +13,8 @@ public class PlayerMovement : BattleCharacterBase
     private float _distance;
     private BattleStateManager _stateManager;
     private AttackManager _playerAttack;
-    //private int _playerID;
-    private float _attackTargetOffset;
+    private int _playerID;
+    private float _attackTargetOffset = 2f;
     private static readonly string FieldLayerName = "Field";
 
     private void Awake()
@@ -33,13 +33,13 @@ public class PlayerMovement : BattleCharacterBase
             _targetPos = transform.position;
         }
     }
-
-    //public void SetPlayerID(int playerID)
-    //{
-    //    _playerID = playerID;
-    //}
+    public void SetPlayerID(int playerID)
+    {
+        _playerID = playerID;
+    }
     public override void FixedUpdateNetwork()
     {
+        if (GameManager.instance.CurrentGameState != GameState.Battle) return;
         if (Object.HasStateAuthority)
         {
             _distance = Vector3.Distance(_targetPos, transform.position);
@@ -59,7 +59,7 @@ public class PlayerMovement : BattleCharacterBase
                     _direction = (_targetPos - transform.position).normalized;
                     characterController.Move(_direction);
                     break;
-                case BattleState.MoveToEnemy:
+                case BattleState.MoveToTarget:
                     TrySetTargetTran();
                     if (_distance < _attackTargetOffset)
                     {
@@ -86,28 +86,21 @@ public class PlayerMovement : BattleCharacterBase
     {
         if (Input.GetMouseButton(0))
         {
+            Ray ray2D = Camera.main.ScreenPointToRay(Input.mousePosition);
+            RaycastHit2D hit2d = Physics2D.Raycast((Vector2)Input.mousePosition, (Vector2)ray2D.direction);
+            if (hit2d) return;
+
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
             if (Physics.Raycast(ray, out hit))
             {
-                //if (hit.collider.gameObject.TryGetComponent(out HitPoint hp))
-                //{
-                //    if (_playerID == hp.PlayerID) return;
-                //    Debug.Log(hit.collider.contactOffset);
-                //    _playerAttack.SetAttackTarget(hp);
-                //    _stateManager.SwitchState(BattleState.MoveToEnemy);
-                //    _targetPos = new Vector3(hit.point.x, transform.position.y, hit.point.z);
-                //}
-                if (hit.collider.gameObject.TryGetComponent(out BattleCharacterBase character))
+                if (hit.collider.gameObject.TryGetComponent(out IDamagable target))
                 {
-                    if (_playerID == character.PlayerID) return;
-                    _playerAttack.SetAttackTarget(character);
-                    _attackTargetOffset = character.GetAttackOffset();
-                    Debug.Log(_attackTargetOffset);
-                    _stateManager.SwitchState(BattleState.MoveToEnemy);
+                    if (_playerID == target.TeamID) return;
+                    _stateManager.SwitchState(BattleState.MoveToTarget);
                     _targetPos = new Vector3(hit.point.x, transform.position.y, hit.point.z);
                 }
-                if (hit.collider.gameObject.layer == LayerMask.NameToLayer(FieldLayerName))
+                else if (hit.collider.gameObject.layer == LayerMask.NameToLayer(FieldLayerName))
                 {
                     _stateManager.SwitchState(BattleState.Move);
                     _targetPos = new Vector3(hit.point.x, transform.position.y, hit.point.z);

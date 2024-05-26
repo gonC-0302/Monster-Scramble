@@ -12,10 +12,10 @@ GameObject:
   - component: {fileID: 8320720753874590648}
   - component: {fileID: 2698556375397654902}
   - component: {fileID: 7721908215021378525}
-  - component: {fileID: 5539174164742486962}
-  - component: {fileID: 3505109499761854654}
   - component: {fileID: 6665449896747560404}
-  m_Layer: 0
+  - component: {fileID: 8343760517072560108}
+  - component: {fileID: 2598240216865646456}
+  m_Layer: 9
   m_Name: Crystal
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -116,31 +116,6 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.99999994, y: 1, z: 0.99999994}
   m_Center: {x: 0, y: 0.5, z: 0}
---- !u!114 &5539174164742486962
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 179163203791921144}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ab381eacda97a4b788f7ee2418ef1ee7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &3505109499761854654
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 179163203791921144}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 44a384abd16f24e04b11b650b541db67, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _maxHP: 0
 --- !u!114 &6665449896747560404
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -158,7 +133,37 @@ MonoBehaviour:
   Flags: 262145
   NestedObjects: []
   NetworkedBehaviours:
-  - {fileID: 3505109499761854654}
+  - {fileID: 8343760517072560108}
+  - {fileID: 2598240216865646456}
+--- !u!114 &8343760517072560108
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 179163203791921144}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 158639473, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SyncScale: 0
+  SyncParent: 0
+  _autoAOIOverride: 1
+  DisableSharedModeInterpolation: 0
+--- !u!114 &2598240216865646456
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 179163203791921144}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2a22ee2797faa41b9959ecce7d83520c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _NetworkedHP: 30
 --- !u!1 &359680464369662036
 GameObject:
   m_ObjectHideFlags: 0
@@ -170,7 +175,7 @@ GameObject:
   - component: {fileID: 790791957740106269}
   - component: {fileID: 7960644414222582377}
   - component: {fileID: 2125625739973960113}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: crystal 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -251,7 +256,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1358792749503416836}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Group
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -284,7 +289,7 @@ GameObject:
   - component: {fileID: 6051695502289325465}
   - component: {fileID: 5493748436572642082}
   - component: {fileID: 267249721757259742}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: crystal 2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -367,7 +372,7 @@ GameObject:
   - component: {fileID: 1520637676048896434}
   - component: {fileID: 1409701981040907251}
   - component: {fileID: 6762337752409119123}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: crystal 3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -450,7 +455,7 @@ GameObject:
   - component: {fileID: 2981259970976480023}
   - component: {fileID: 1505562962883434454}
   - component: {fileID: 6966408915332830398}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: crystal
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -533,7 +538,7 @@ GameObject:
   - component: {fileID: 3574779073976139393}
   - component: {fileID: 3548300833438385706}
   - component: {fileID: 4452010588177266116}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: crystal 4
   m_TagString: Untagged
   m_Icon: {fileID: 0}
