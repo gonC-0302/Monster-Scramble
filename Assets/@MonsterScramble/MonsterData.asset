@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c39fd0295b8914c56a9319908341656b, type: 3}
+  m_Name: MonsterData
+  m_EditorClassIdentifier: 
+  _monsterDatasList:
+  - ID: 0
+    MonsterName: TurtleShell
+    Image: {fileID: 21300000, guid: c51387ecafc9b48189feed63044bccf0, type: 3}
+    SealedMonsterPrefab:
+      RawGuidValue: f6270c69a965a4f3aab7e860656c84cb
+    SummonMonsterPrefab:
+      RawGuidValue: a5a03c12adc224c65a42e08478dd621d
+  - ID: 1
+    MonsterName: Beholder
+    Image: {fileID: 21300000, guid: 925e20ca96d894d9ca35765030b2f9ca, type: 3}
+    SealedMonsterPrefab:
+      RawGuidValue: 7ac5e7e491b234322b4fb53f6355cb57
+    SummonMonsterPrefab:
+      RawGuidValue: 3dfb1bc6a39da4dfdad3859d6417cd1d
+  - ID: 2
+    MonsterName: Nightmare
+    Image: {fileID: 21300000, guid: b835c4c02ac7643f59a37d537c836977, type: 3}
+    SealedMonsterPrefab:
+      RawGuidValue: 75b8cfd58bc2e44c6b4bc2eb8bc2bef1
+    SummonMonsterPrefab:
+      RawGuidValue: d914a86624685431b9d560d6e3743410
+  - ID: 3
+    MonsterName: RedDragon
+    Image: {fileID: 21300000, guid: 083577d124396491fbe73d0fb4240b12, type: 3}
+    SealedMonsterPrefab:
+      RawGuidValue: 571c363c36da04f81a680dd5e7bbc9a0
+    SummonMonsterPrefab:
+      RawGuidValue: 8c232d93988044d38af2babc778d59c4

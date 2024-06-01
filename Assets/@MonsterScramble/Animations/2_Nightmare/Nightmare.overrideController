@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!221 &22100000
+AnimatorOverrideController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Nightmare
+  m_Controller: {fileID: 9100000, guid: c4c584404450d41fbab2fe6001603020, type: 2}
+  m_Clips:
+  - m_OriginalClip: {fileID: 7400000, guid: 3a9bf7846efa94f93a7512c949c0a36e, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: a1708d170a26f41ca90bc6b7edcd6dbe, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: 30846a70f58fd4ee287812b761ff95f6, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: f6257b1970ec344d0a621d546e334216, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: 22fa3bbee95714702a693501ae0d81a0, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: ccc7934df327940b0ba7c3f6b56b12f6, type: 2}
