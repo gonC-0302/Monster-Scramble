@@ -1,11 +1,9 @@
-using Fusion;
-
 public interface IDamagable
 {
-    public int MaxHP { get; set; }
     public float NetworkedHP { get; set; }
-    public bool IsSealedMonster { get; set; }
+    public bool IsMonsterCrystal { get; set; }
     public int TeamID { get; set; }
-    void DealDamageRpc(float damage);
-    //void UpdateHPGage();
+    public float GetDamagedHP(float power);
+    void DealDamageRpc(float damagedHP);
+    void UpdateHPGage();
 }

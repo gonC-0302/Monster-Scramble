@@ -5,9 +5,6 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 0
-    path: Assets/@MonsterScramble/Scenes/Home.unity
-    guid: 2fb3f56942c06488a9befb61f0b838e0
   - enabled: 1
     path: Assets/@MonsterScramble/Scenes/Battle.unity
     guid: 34e1f58e424cd4628b846f6bc5d5a029
