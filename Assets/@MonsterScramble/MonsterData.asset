@@ -36,7 +36,7 @@ MonoBehaviour:
     SummonMonsterPrefab:
       RawGuidValue: 3dfb1bc6a39da4dfdad3859d6417cd1d
   - ID: 2
-    MaxHP: 10
+    MaxHP: 15
     MaxSpeed: 2.5
     Power: 5
     AttackInterval: 0.5

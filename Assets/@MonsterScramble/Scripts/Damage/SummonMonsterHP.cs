@@ -42,6 +42,7 @@ public class SummonMonsterHP : NetworkBehaviour, IDamagable
         if (GameManager.instance.CurrentGameState != GameState.Battle) return;
         if (_stateMachine.CurrentState == CharacterState.Death) return;
         UpdateHPGage();
+        if (NetworkedHP == MaxHP) return;
         EffectPool.instance.GetHitEffect(gameObject.transform.position);
         if (NetworkedHP < 1)
         {

@@ -30,6 +30,7 @@ public class MonsterCrystalHP : NetworkBehaviour,IDamagable
     {
         if (GameManager.instance.CurrentGameState != GameState.Battle) return;
         UpdateHPGage();
+        if (NetworkedHP == _maxHP) return;
         EffectPool.instance.GetHitEffect(gameObject.transform.position);
         if (NetworkedHP < 1)
         {

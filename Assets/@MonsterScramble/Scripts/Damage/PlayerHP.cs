@@ -45,11 +45,12 @@ public class PlayerHP : NetworkBehaviour, IDamagable
     {
         if (GameManager.instance.CurrentGameState != GameState.Battle) return;
         if (_stateMachine.CurrentState == CharacterState.Death) return;
+        UpdateHPGage();
+        if (NetworkedHP == _maxHP) return;
         if (Object.HasStateAuthority)
         {
             AudioManager.instance.PlayDamageSE();
         }
-        UpdateHPGage();
         EffectPool.instance.GetHitEffect(gameObject.transform.position);
         if (NetworkedHP < 1)
         {
