@@ -66,8 +66,8 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
     }
     public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
     {
-        //if (runner.SessionInfo.PlayerCount == 2)
-        //{
+        if (runner.SessionInfo.PlayerCount == 2)
+        {
             _homeCanvas.SetActive(false);
             GameManager.instance.StartBattle();
 
@@ -75,7 +75,7 @@ public class GameLauncher : MonoBehaviour, INetworkRunnerCallbacks
             if (!runner.IsSharedModeMasterClient) return;
             _networkRunner.Spawn(_timerManager, Vector3.zero, Quaternion.identity, _networkRunner.LocalPlayer).GetComponent<BattleTimeManager>();
             StartCoroutine(_sealedMonsterSpawner.SpawnMonsterCrystal(_networkRunner));
-        //}
+        }
     }
     /// <summary>
     /// オンライン接続終了
